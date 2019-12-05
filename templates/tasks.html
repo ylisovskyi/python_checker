@@ -5,9 +5,9 @@
       <meta name='viewport' content='width=device-width, initial-scale=1'>
       <title>Python code checker</title>
       
-	  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+	  <link href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
       
-	  <link rel="stylesheet" href="css/task.css" type="text/css">
+	  <link rel="stylesheet" href="{{ url_for('static', filename='css/task.css') }}" type="text/css">
    </head>
    
    <body>
@@ -68,9 +68,10 @@
             </div>
          </div>
       </div>
+      </div>
       
-	  <script src="vendor/jquery/jquery.min.js"></script>
-      <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+	  <script src="{{ url_for('static', filename='vendor/jquery/jquery.min.js') }}"></script>
+      <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
    
    </body>
 </html>
