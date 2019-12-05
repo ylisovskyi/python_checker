@@ -31,6 +31,8 @@ class CodeValidator(object):
                 input_sample = '"""{}"""'.format(input_sample)
             tmp_code = code + '\n\nprint(main({}))'.format(input_sample)
             validated = self.validate(tmp_code, type(expected_output))
+            validated['input'] = input_sample
+            validated['expected'] = expected_output
             if validated['valid']:
                 actual_output = validated['result']
                 validated['correct'] = (actual_output == expected_output)
@@ -66,6 +68,8 @@ class CodeValidator(object):
             'valid': False if err else True,
             'correct': False,
             'result': out,
+            'input': None,
+            'expected': None,
             'errors': [err]
         }
 
@@ -74,7 +78,7 @@ if __name__ == '__main__':
     validator = CodeValidator()
     code = """
 def main(l):
-    return l[::-1]
+    return l[::-1]s
 """
     test_results = json.loads(
         validator.test_code(
@@ -95,3 +99,5 @@ def main(l):
     )
     for res in test_results:
         print(res)
+        for error in res['errors']:
+            print(error)
