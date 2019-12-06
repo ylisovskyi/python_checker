@@ -70,7 +70,7 @@ class CodeValidator(object):
             'result': out,
             'input': None,
             'expected': None,
-            'errors': [err]
+            'error': err
         }
 
 
@@ -99,5 +99,4 @@ def main(l):
     )
     for res in test_results:
         print(res)
-        for error in res['errors']:
-            print(error)
+        print(res['error'])

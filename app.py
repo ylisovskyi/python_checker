@@ -1,10 +1,13 @@
-from flask import Flask
+from . import create_app
 from flask import render_template
+from flask_login import login_required, current_user
 
-app = Flask(__name__)
+
+app = create_app()
 
 
 @app.route('/')
+@login_required
 def index_page():
     return render_template('index.html')
 
@@ -15,11 +18,13 @@ def login_page():
 
 
 @app.route('/tasks')
+@login_required
 def tasks_page():
     return render_template('tasks.html')
 
 
 @app.route('/code')
+@login_required
 def code_page():
     return render_template('code.html')
 
