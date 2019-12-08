@@ -57,7 +57,7 @@
                     document.getElementById("code-form").onsubmit = function(evt) {
                       document.getElementById("editortext").value = editor.getValue();
                     };
-                  editor.setValue("def main():\n\t...", 1)
+                  editor.setValue("def main(l):\n\treturn l[::-1]", 1)
                </script>
                
 			   <button type="submit" class="btn btn-primary">Check code</button>
