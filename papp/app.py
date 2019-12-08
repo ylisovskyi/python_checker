@@ -34,6 +34,14 @@ def tasks_page():
     return render_template('tasks.html', tasks=tasks)
 
 
+@app.route('/verifycode/<task_id>', methods=["POST"])
+@login_required
+def verify_code(task_id):
+    user_code = request.form.get('user-code')
+
+
+    return render_template('tasks.html')
+
 @app.route('/code')
 @login_required
 def code_page():

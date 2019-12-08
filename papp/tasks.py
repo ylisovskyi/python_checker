@@ -4,8 +4,7 @@ from flask_login import login_required
 from .models import Task
 
 
-tasks = Blueprint('auth', __name__)
-
+tasks = Blueprint('tasks', __name__)
 
 
 @tasks.route('/tasks/<task_id>')
