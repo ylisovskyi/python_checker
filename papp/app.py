@@ -1,6 +1,6 @@
-from . import create_app
 from flask import render_template
 from flask_login import login_required, current_user
+from papp import create_app
 
 
 app = create_app()
@@ -30,4 +30,4 @@ def code_page():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True, ssl_context="adhoc")

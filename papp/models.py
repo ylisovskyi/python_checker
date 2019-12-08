@@ -25,6 +25,9 @@ class UserInfo(db.Model, UserMixin):
     )
     result = db.relationship('Results', backref='UserInfo', lazy='dynamic')
 
+    def get_id(self):
+        return self.username
+
 
 class TaskList(db.Model):
 
