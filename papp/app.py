@@ -1,6 +1,7 @@
-from flask import render_template
+from flask import render_template, request
 from flask_login import login_required, current_user
 from papp import create_app
+from papp.models import Task, TaskList
 
 
 app = create_app()
@@ -20,7 +21,17 @@ def login_page():
 @app.route('/tasks')
 @login_required
 def tasks_page():
-    return render_template('tasks.html')
+    difficulty = request.args.get('difficulty')
+
+    if not difficulty:
+        tasks = Task.query.all()
+    else:
+        tasks = (
+            Task.query.join(TaskList)
+            .filter(TaskList.difficulty == difficulty)
+        )
+
+    return render_template('tasks.html', tasks=tasks)
 
 
 @app.route('/code')
@@ -30,4 +41,5 @@ def code_page():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, ssl_context="adhoc")
+    # app.run(debug=True, ssl_context="adhoc")
+    app.run(debug=True)
