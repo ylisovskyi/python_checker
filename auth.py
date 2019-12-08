@@ -3,6 +3,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, logout_user, login_required
 from .models import UserInfo, Initials
 from . import db
+from oauthlib.oauth2 import WebApplicationClient
+import requests
+
 
 auth = Blueprint('auth', __name__)
 
@@ -17,15 +20,17 @@ def login_post():
     username = request.form.get('inputUsername')
     password = request.form.get('inputPassword')
 
+    print(username, password)
+
     user = UserInfo.query.filter_by(username=username).first()
 
-    if not user and not check_password_hash(user.password, password):
+    if (not user) or (not check_password_hash(user.password, password)):
         flash('Please check your login details and try again.')
         return redirect(url_for('auth.login'))
 
     login_user(user)
 
-    return redirect(url_for('app.index_page'))
+    return redirect(url_for('index_page'))
 
 
 @auth.route('/signup')
@@ -69,4 +74,4 @@ def signup_post():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('app.login_page'))
+    return redirect(url_for('login_page'))
