@@ -3,7 +3,7 @@ import json
 from flask import Blueprint, render_template, request
 from flask_login import login_required
 from .models import Task
-from papp.checker import CodeValidator
+from papp.checker import PythonValidatorFactory
 from papp.models import TestData
 
 
@@ -22,7 +22,7 @@ def task_by_id(task_id):
     if request.method == "POST":
         user_code = request.form.get('user-code')
         task = Task.query.filter_by(task_id=task_id).first()
-        validator_builder = ValidatorFactory.create_validator('python')
+        validator_builder = PythonValidatorFactory().create_validator('python')
 
         test_data = (TestData.query.filter(TestData.task_id == task_id)
                      .with_entities(TestData.input_data,
