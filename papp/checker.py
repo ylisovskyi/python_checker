@@ -22,7 +22,7 @@ CODE_VALIDATORS = {
 }
 
 
-class ValidatorBuilder(object):
+class ValidatorFactory(object):
     
     @staticmethod
     def create_validator(language='python', *args, **kwargs):
