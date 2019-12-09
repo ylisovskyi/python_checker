@@ -16,28 +16,42 @@ def wrap_to_json(func):
     return wrapper
 
 
-CODE_VALIDATORS = {
-    'python': PythonCodeValidator,
-    'java': JavaCodeValidator
-}
-
-
 class ValidatorFactory(object):
     
-    @staticmethod
-    def create_validator(language='python', *args, **kwargs):
-        return CODE_VALIDATORS[language](*args, **kwargs)
+    def create_validator(*args, **kwargs):
+        raise NotImplementedError
+    
+
+class PythonValidatorFactory(ValidatorFactory):
+    
+    kwargs = {
+        'interpreter': 'python',
+        'file_extension': '.py',
+        'additional_args': [],
+        'function_usage': '\n\nprint(main({}))'
+    }
+    
+    def create_validator(*args, **kwargs):
+        return PythonCodeValidator(*args, **self.kwargs)
+    
+    
+class JavaValidatorFactory(ValidatorFactory):
+    
+    kwargs = {
+        'interpreter': 'java',
+        'file_extension': '',
+        'additional_args': [],
+        'function_usage': '\n\nSystem.out.println(main({}))'
+    }
+    
+    def create_validator(*args, **kwargs):
+        return JavaCodeValidator(*args, **self.kwargs)
 
 
 class CodeValidator(object):
-    
-    interpreter = None
-    file_extension = ''
-    additional_args = []
-    function_usage = ''
 
-    def __init__(self, compile_mode='exec'):
-        self.compile_mode = compile_mode
+    def __init__(self, *args, **kwargs):
+        self.__dict__.update(kwargs)
         
     def additional_compile():
         pass
@@ -96,20 +110,11 @@ class CodeValidator(object):
         }
     
     
-class PythonCodeValidator(object):
-    
-    interpreter = 'python'
-    file_extension = '.py'
-    additional_args = []
-    function_usage = '\n\nprint(main({}))'
+class PythonCodeValidator(CodeValidator):
+    pass
     
     
-class JavaCodeValidator(object):
-    
-    interpreter = 'java'
-    file_extension = ''
-    additional_args = []
-    function_usage = '\n\nSystem.out.println(main({}))'
+class JavaCodeValidator(CodeValidator):
 
     def additional_compile():
         filename = 'file.java'
