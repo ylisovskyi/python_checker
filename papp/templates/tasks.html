@@ -22,7 +22,7 @@
                <a class="nav-link" href="login.html">Головна</a>
             </li>
             <li class="nav-item active">
-               <a class="nav-link" href="code.html">Завдання<span class="sr-only">(current)</span></a>
+               <a class="nav-link" href="/tasks">Завдання<span class="sr-only">(current)</span></a>
             </li>
                <li class="nav-item">
                <a class="nav-link" href="stats.html">Статистика</a>
@@ -40,26 +40,33 @@
             <div class="col-lg-12 col-xl-6">
                <div class="card">
                   <div class="card-header">
-                     <h5 class="card-header-text">Tasks</h5>
+                     <h5 class="card-header-text">Tasks:
+                         <a href="/tasks">all</a>
+                         <a href="/tasks?difficulty=0">easy</a>
+                         <a href="/tasks?difficulty=1">mid</a>
+                         <a href="/tasks?difficulty=2">hard</a>
+                     </h5>
                   </div>
                   
 				  <div class="card-block p-b-0">
                      <div class="row">
                         <div class="col-md-12" id="sortable">
-						   <div class="task" style="" alt="">
-                              <h6><a href="code.html">Task 1</a></h6>
-                              <p>Description.</p>
-                           </div>
-                           
-						   <div class="task" style="" alt="">
-                              <h6><a href="code.html">Task 2</a></h6>
-                              <p>Description. Description. Description. Description. Description. Description. Description. Description. Description. Description.</p>
-                           </div>
-                           
-						   <div class="task" style="" alt="">
-                              <h6><a href="code.html">Task 3</a></h6>
-                              <p>Description. Description. Description. Description. Description. Description. Description. Description. Description. Description.</p>
-                           </div>
+                           {% for task in tasks %}
+                               <div class="task" style="" alt="">
+                                  <h6><a href="/tasks/{{ task.task_id }}">{{ task.task_name }}</a></h6>
+                                  <p>{{ task.description }}</p>
+                               </div>
+                           {% endfor %}
+{#                           #}
+{#						   <div class="task" style="" alt="">#}
+{#                              <h6><a href="code.html">Task 2</a></h6>#}
+{#                              <p>Description. Description. Description. Description. Description. Description. Description. Description. Description. Description.</p>#}
+{#                           </div>#}
+{#                           #}
+{#						   <div class="task" style="" alt="">#}
+{#                              <h6><a href="code.html">Task 3</a></h6>#}
+{#                              <p>Description. Description. Description. Description. Description. Description. Description. Description. Description. Description.</p>#}
+{#                           </div>#}
                         
 						</div>
                      </div>

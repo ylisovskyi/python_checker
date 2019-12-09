@@ -37,6 +37,8 @@ def create_app():
         return UserInfo.query.get(username)
 
     from .auth import auth as auth_blueprint
+    from .tasks import tasks as tasks_blueprint
     app.register_blueprint(auth_blueprint)
+    app.register_blueprint(tasks_blueprint)
 
     return app

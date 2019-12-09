@@ -37,11 +37,12 @@
   <br/>
    
    <div class="container">
-      <form name="code-form" action="">
+      <form name="code-form" action="/tasks/{{ task.task_id }}" method="POST" id="code-form">
+         <input name="user-code" type="text" hidden id="editortext">
          <div class="row">
             <div class="col-sm">
-               <h4>TASK NAME</h4>
-               <p>Description</p>
+               <h4>{{ task.task_name }}</h4>
+               <p>{{ task.description }}</p>
                
 			   <label for="code"> <input type="hidden" id="code" name="code" value=""> </label>
                
@@ -52,10 +53,21 @@
                   var editor = ace.edit("editor");
                   editor.setTheme("ace/theme/github");
                   editor.getSession().setMode("ace/mode/python");
-                  editor.setContent("def main():\n\t...")
+                  // added event handler
+                    document.getElementById("code-form").onsubmit = function(evt) {
+                      document.getElementById("editortext").value = editor.getValue();
+                    };
+                  editor.setValue("{{ editor_code }}", 1)
                </script>
-               
-			   <button type="submit" class="btn btn-primary" onclick="">Check code</button>
+                {% if test_results %}
+                    {% for test_result in test_results %}
+    {#                    {% if test_result.error %}#}
+                            <h6 style="color: red">{{ test_result.error }}</h6>
+    {#                    {% endif %}#}
+
+                    {% endfor %}
+                {% endif %}
+			   <button type="submit" class="btn btn-primary">Check code</button>
             </div>
          </div>
       </form>
