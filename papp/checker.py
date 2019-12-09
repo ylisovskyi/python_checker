@@ -16,10 +16,31 @@ def wrap_to_json(func):
     return wrapper
 
 
+CODE_VALIDATORS = {
+    'python': PythonCodeValidator,
+    'java': JavaCodeValidator
+}
+
+
+class ValidatorBuilder(object):
+    
+    @staticmethod
+    def create_validator(language='python', *args, **kwargs):
+        return CODE_VALIDATORS[language](*args, **kwargs)
+
+
 class CodeValidator(object):
+    
+    interpreter = None
+    file_extension = ''
+    additional_args = []
+    function_usage = ''
 
     def __init__(self, compile_mode='exec'):
         self.compile_mode = compile_mode
+        
+    def additional_compile():
+        pass
 
     @wrap_to_json
     def test_code(self, code, input_data, expected_output_data):
@@ -29,7 +50,7 @@ class CodeValidator(object):
         ):
             if isinstance(input_sample, str):
                 input_sample = '"""{}"""'.format(input_sample)
-            tmp_code = code + '\n\nprint(main({}))'.format(input_sample)
+            tmp_code = code + self.function_usage.format(input_sample)
             validated = self.validate(tmp_code, type(expected_output))
             validated['input'] = input_sample
             validated['expected'] = expected_output
@@ -41,13 +62,14 @@ class CodeValidator(object):
         return results
 
     def compile_code(self, code, expected_type=None):
-        filename = 'file.py'
+        self.additional_compile()
+        filename = 'file' + self.file_extension
         result = None
         with open(filename, 'w') as f:
             f.write(code)
 
         sub = subprocess.Popen(
-            ['python', filename],
+            [self.interpreter, filename] + self.additional_args,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE
         )
@@ -59,7 +81,7 @@ class CodeValidator(object):
                 result = res_output.replace('\r', '').rstrip('\n')
             else:
                 result = ast.literal_eval(res_output)
-        os.remove('file.py')
+        os.remove(filename)
         return result, res_error
 
     def validate(self, source, expected_type=None):
@@ -72,31 +94,30 @@ class CodeValidator(object):
             'expected': None,
             'error': err
         }
+    
+    
+class PythonCodeValidator(object):
+    
+    interpreter = 'python'
+    file_extension = '.py'
+    additional_args = []
+    function_usage = '\n\nprint(main({}))'
+    
+    
+class JavaCodeValidator(object):
+    
+    interpreter = 'java'
+    file_extension = ''
+    additional_args = []
+    function_usage = '\n\nSystem.out.println(main({}))'
 
+    def additional_compile():
+        filename = 'file.java'
+        with open(filename, 'w') as f:
+            f.write(code)
 
-if __name__ == '__main__':
-    validator = CodeValidator()
-    code = """
-def main(l):
-    return l[::-1]s
-"""
-    test_results = json.loads(
-        validator.test_code(
-            code=code,
-            input_data=[
-                [1, 2, 3],
-                'hello',
-                'hi\nhi',
-                [1, 2, 'hello']
-            ],
-            expected_output_data=[
-                [3, 2, 1],
-                'olleh',
-                'ih\nih',
-                ['hello', 3, 2]
-            ]
+        sub = subprocess.Popen(
+            ['javac', filename] + self.additional_args,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
         )
-    )
-    for res in test_results:
-        print(res)
-        print(res['error'])
