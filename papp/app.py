@@ -1,4 +1,5 @@
-from flask import render_template, request
+import flask
+from flask import render_template, request, redirect, url_for
 from flask_login import login_required, current_user
 from papp import create_app
 from papp.models import Task, TaskList, TestData
@@ -35,33 +36,6 @@ def tasks_page():
 
     return render_template('tasks.html', tasks=tasks)
 
-
-@app.route('/verifycode/<task_id>', methods=["POST"])
-@login_required
-def verify_code(task_id):
-    user_code = request.form.get('user-code')
-    validator = CodeValidator()
-
-    test_data = (TestData.query.filter(TestData.task_id == task_id)
-                 .with_entities(TestData.input_data,
-                                TestData.output_data)
-                 .all()
-    )
-
-    test_data = [(eval(input_data), eval(output_data)) for (input_data, output_data) in test_data]
-    input_data, output_data = zip(*test_data)
-
-    test_results = json.loads(
-        validator.test_code(
-            code=user_code,
-            input_data=input_data,
-            expected_output_data=output_data
-        )
-    )
-
-    print(test_results)
-
-    return render_template('code.html', results=test_results)
 
 @app.route('/code')
 @login_required
