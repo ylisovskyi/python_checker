@@ -67,6 +67,9 @@
 
                     {% endfor %}
                 {% endif %}
+                {% if test_data %}
+                    {% for input_data, expected_result in test_data %}
+                        <h6>Input: {{ input_data }}</h6><br><h6>Expected output: {{ expected_result }}</h6>
 			   <button type="submit" class="btn btn-primary">Check code</button>
             </div>
          </div>

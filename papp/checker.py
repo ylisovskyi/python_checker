@@ -2,6 +2,7 @@ import ast
 import json
 import os
 import subprocess
+from papp.logger import LoggerProxy
 
 
 def wrap_to_json(func):
@@ -18,7 +19,7 @@ def wrap_to_json(func):
 
 class ValidatorFactory(object):
     
-    def create_validator(*args, **kwargs):
+    def create_validator(self, *args, **kwargs):
         raise NotImplementedError
     
 
@@ -31,7 +32,7 @@ class PythonValidatorFactory(ValidatorFactory):
         'function_usage': '\n\nprint(main({}))'
     }
     
-    def create_validator(*args, **kwargs):
+    def create_validator(self, *args, **kwargs):
         return PythonCodeValidator(*args, **self.kwargs)
     
     
@@ -44,7 +45,7 @@ class JavaValidatorFactory(ValidatorFactory):
         'function_usage': '\n\nSystem.out.println(main({}))'
     }
     
-    def create_validator(*args, **kwargs):
+    def create_validator(self, *args, **kwargs):
         return JavaCodeValidator(*args, **self.kwargs)
 
 
@@ -52,8 +53,9 @@ class CodeValidator(object):
 
     def __init__(self, *args, **kwargs):
         self.__dict__.update(kwargs)
+        self.logger = LoggerProxy.getLogger('checker', True)
         
-    def additional_compile():
+    def additional_compile(self, code):
         pass
 
     @wrap_to_json
@@ -76,7 +78,7 @@ class CodeValidator(object):
         return results
 
     def compile_code(self, code, expected_type=None):
-        self.additional_compile()
+        self.additional_compile(code)
         filename = 'file' + self.file_extension
         result = None
         with open(filename, 'w') as f:
@@ -90,6 +92,8 @@ class CodeValidator(object):
         res_output, res_error = sub.communicate()
         res_output = res_output.decode('utf8')
         res_error = res_error.decode('utf8')
+        self.logger.info(res_output) if res_output else None
+        self.logger.error(res_error) if res_error else None
         if res_output:
             if expected_type == str:
                 result = res_output.replace('\r', '').rstrip('\n')
@@ -116,12 +120,12 @@ class PythonCodeValidator(CodeValidator):
     
 class JavaCodeValidator(CodeValidator):
 
-    def additional_compile():
+    def additional_compile(self, code):
         filename = 'file.java'
         with open(filename, 'w') as f:
             f.write(code)
 
-        sub = subprocess.Popen(
+        subprocess.Popen(
             ['javac', filename] + self.additional_args,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE

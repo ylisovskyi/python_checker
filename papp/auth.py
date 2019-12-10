@@ -25,8 +25,6 @@ def login_post():
     username = request.form.get('inputUsername')
     password = request.form.get('inputPassword')
 
-    print(username, password)
-
     user = UserInfo.query.filter_by(username=username).first()
 
     if (not user) or (not check_password_hash(user.password, password)):
