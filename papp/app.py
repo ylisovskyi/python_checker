@@ -49,19 +49,26 @@ def code_page():
 @login_required
 def stats_page():
     all_results = Results.query.filter_by(username=current_user.username).all()
+    all_results_pretty = []
     fully_solved = 0
     score_sum = 0
     for result in all_results:
         if result.score == 5:
             fully_solved += 1
         score_sum += result.score
+        all_results_pretty.append({
+            'id': result.task_id,
+            'score': result.score,
+            'percents': (float(result) / 5.0) * 100,
+            'fails': 5 - result.score
+        })
 
     full_stats = {
         'solved': fully_solved,
         'average': (float(score_sum) / 5) * len(all_results) * 100,
         'fails': (len(all_results) * 5) - score_sum
     }
-    return render_template('stats.html', results=all_results, full_stats=full_stats)
+    return render_template('stats.html', results=all_results_pretty, full_stats=full_stats)
 
 
 if __name__ == '__main__':
