@@ -5,8 +5,7 @@ from papp import create_app
 from papp.models import Task, TaskList, TestData
 from papp.checker import CodeValidator
 import json
-from . import db
-from .models import Results
+from papp.models import Results
 
 
 app = create_app()
@@ -59,7 +58,7 @@ def stats_page():
         all_results_pretty.append({
             'id': result.task_id,
             'score': result.score,
-            'percents': (float(result) / 5.0) * 100,
+            'percents': (float(result.score) / 5.0) * 100,
             'fails': 5 - result.score
         })
 
