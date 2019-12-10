@@ -1,6 +1,6 @@
 import flask
 import json
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, redirect, url_for
 from flask_login import login_required, current_user
 from .models import Task, Results
 from . import db
@@ -18,7 +18,7 @@ def task_by_id(task_id):
     if not task:
         return 404, f'task with id {task_id} is not found.'
 
-    user_code = r"def main(l):\n\t..."
+    user_code = r"""def main(l):\r\n\t..."""
     test_data = (TestData.query.filter(TestData.task_id == task_id)
                  .with_entities(TestData.input_data,
                                 TestData.output_data)
@@ -31,7 +31,6 @@ def task_by_id(task_id):
 
     if request.method == "POST":
         user_code = request.form.get('user-code')
-        task = Task.query.filter_by(task_id=task_id).first()
         validator_builder = PythonValidatorFactory().create_validator('python')
 
         test_results = json.loads(
@@ -52,7 +51,8 @@ def task_by_id(task_id):
             task_id=task_id
         ).first()
         if old_result:
-            old_result.score = score
+            if old_result.score < score:
+                old_result.score = score
         else:
             result = Results(
                 username=curr_user,
@@ -62,7 +62,10 @@ def task_by_id(task_id):
             db.session.add(result)
         db.session.commit()
 
-        return render_template('code.html', task=task, test_results=test_results, editor_code=user_code)
+        if score == 5:
+            return redirect(url_for('tasks_page'))
 
-    return render_template('code.html', task=task, editor_code=user_code, test_data=zip(input_data, output_data))
+        return render_template('code.html', task=task, test_results=test_results, editor_code=user_code.replace('\n', '\r\n'), test_data=None)
+
+    return render_template('code.html', task=task, editor_code=user_code, test_data=zip(input_data, output_data), test_results=None)
 

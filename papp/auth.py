@@ -15,6 +15,7 @@ auth = Blueprint('auth', __name__)
 def get_google_provider_cfg():
     return requests.get(GOOGLE_DISCOVERY_URL).json()
 
+
 @auth.route('/login')
 def login():
     return render_template('login.html')
@@ -29,7 +30,7 @@ def login_post():
 
     if (not user) or (not check_password_hash(user.password, password)):
         flash('Please check your login details and try again.')
-        return redirect(url_for('auth.login'))
+        return redirect(url_for('login'))
 
     login_user(user)
 
@@ -132,7 +133,7 @@ def signup_post():
 
     if user:
         flash('Email address already exists.')
-        return redirect(url_for('auth.signup'))
+        return redirect(url_for('signup'))
 
     initials_id = Initials.query.order_by('-id').first().initials_id
     new_initials = Initials(
@@ -150,7 +151,7 @@ def signup_post():
     db.session.add(new_user)
     db.session.commit()
 
-    return redirect(url_for('auth.login'))
+    return redirect(url_for('login'))
 
 
 @auth.route('/logout')

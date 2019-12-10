@@ -58,9 +58,13 @@
                </script>
                 {% if test_results %}
                     {% for test_result in test_results %}
-    {#                    {% if test_result.error %}#}
-                            <h6 style="color: red">{{ test_result.error }}</h6>
-    {#                    {% endif %}#}
+                        {% if test_result['error'] %}
+                            <h6 style="color: red">{{ test_result['error'] }}</h6>
+                        {% elif not test_result['correct'] %}
+                            <h6>Input: {{ test_result['input'] }}</h6><br>
+                            <h6>Expected output: {{ test_result['expected'] }}</h6><br>
+                            <h6>Actual output: {{ test_result['result'] }}</h6>
+                        {% endif %}
 
                     {% endfor %}
                 {% endif %}
